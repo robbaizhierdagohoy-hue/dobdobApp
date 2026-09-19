@@ -1,6 +1,5 @@
 import React from "react";
 
-// Replace with your actual TMDB API key
 const API_KEY = "62e8af194bc46e1edd34dde72cdc135e";
 
 export const fetchMoviesFromAPI = async (query = "") => {
