@@ -57,7 +57,7 @@ export default function Index() {
         {activeTab === "search" && (
           <View style={styles.searchForm}>
             <TextInput
-              placeholder="Search movie title..."
+              placeholder="Search movies..."
               placeholderTextColor="#d6d5d5"
               value={searchQuery}
               onChangeText={setSearchQuery}
@@ -71,7 +71,7 @@ export default function Index() {
         )}
 
         {loading ? (
-          <ActivityIndicator size="large" color="#FFFFFF" style={{ marginTop: 20 }} />
+          <ActivityIndicator size="large" color="#fff" style={{ marginTop: 20 }} />
         ) : (
           <ScrollView showsVerticalScrollIndicator={false}>
             {displayedList.length === 0 ? (
