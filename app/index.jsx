@@ -1,140 +1,77 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  Text,
-  ScrollView,
-  ActivityIndicator,
-  StyleSheet,
-  SafeAreaView,
-} from "react-native";
-import Header from "./header.jsx";
-import MovieCard from "./movieCard.jsx";
-import { fetchMoviesFromAPI } from "../src/api.jsx";
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import { useRouter } from "expo-router";
+import Logo from "../assets/LOGO.jpg"; 
 
-export default function Index() {
-  const [movies, setMovies] = useState([]);
-  const [watchlist, setWatchlist] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("search");
-
-  const loadMovies = async (query = "") => {
-    setLoading(true);
-    const data = await fetchMoviesFromAPI(query);
-    setMovies(data);
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    loadMovies();
-  }, []);
-
-  const handleSearchSubmit = () => {
-    loadMovies(searchQuery);
-  };
-
-  const toggleWatchlist = (movie) => {
-    if (watchlist.some((item) => item.id === movie.id)) {
-      setWatchlist(watchlist.filter((item) => item.id !== movie.id));
-    } else {
-      setWatchlist([...watchlist, movie]);
-    }
-  };
-
-  const displayedList = activeTab === "watchlist" ? watchlist : movies;
+export default function WelcomeScreen() {
+  const router = useRouter();
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <View style={styles.container}>
-        <Header
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          watchlistCount={watchlist.length}
-        />
-
-        {activeTab === "search" && (
-          <View style={styles.searchForm}>
-            <TextInput
-              placeholder="Search movies..."
-              placeholderTextColor="#d6d5d5"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              onSubmitEditing={handleSearchSubmit}
-              style={styles.searchInput}
-            />
-            <TouchableOpacity onPress={handleSearchSubmit} style={styles.searchBtn}>
-              <Text style={styles.searchBtnText}>Search</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {loading ? (
-          <ActivityIndicator size="large" color="#fff" style={{ marginTop: 20 }} />
-        ) : (
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {displayedList.length === 0 ? (
-              <Text style={styles.emptyText}>No movies found.</Text>
-            ) : (
-              displayedList.map((movie) => (
-                <MovieCard
-                  key={movie.id}
-                  movie={movie}
-                  isSaved={watchlist.some((item) => item.id === movie.id)}
-                  toggleWatchlist={toggleWatchlist}
-                />
-              ))
-            )}
-          </ScrollView>
-        )}
+    <View style={styles.container}>
+      <View style={styles.logoBadge}>
+        <Text style={styles.logoText}>DobDob TV</Text>
       </View>
-    </SafeAreaView>
+        <Image source={Logo} style={styles.logo} />
+      <Text style={styles.subtitle}>
+        Discover, search, and save movie watchlist.
+      </Text>
+      <TouchableOpacity
+        style={styles.exploreBtn}
+        onPress={() => router.push("/home")} 
+      >
+        <Text style={styles.btnText}>Explore Movies</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeContainer: {
-    flex: 1,
-    backgroundColor: "#121212",
-  },
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: "#121212",
-  },
-  searchForm: {
-    flexDirection: "row",
-    marginBottom: 16,
-    gap: 8,
-  },
-  searchInput: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "#ffffff",
-    backgroundColor: "#1E1E1E",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 14,
-    color: "#FFFFFF",
-  },
-  searchBtn: {
-    backgroundColor: "#FFFFFF",
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 18,
-    borderRadius: 10,
+    padding: 24,
   },
-  searchBtnText: {
-    color: "#121212",
+  logo:{
+    width: 210, 
+    height: 200,
+    borderRadius: 100, 
+    marginBottom: 20,
+    borderColor: "#fefeff",
+    borderWidth: 3,
+    alignSelf: "center",
+  },
+  logoBadge: {
+    paddingVertical: 12,
+    paddingHorizontal: 28,
+    borderRadius: 30,
+    borderWidth: 4,
+    borderColor: "#2742bf",
+    backgroundColor: "#ffffff",
+    marginBottom: 20,
+  },
+  logoText: {
+    fontSize: 20,
     fontWeight: "bold",
-    fontSize: 14,
+    color: "#000000",
   },
-  emptyText: {
-    textAlign: "center",
-    marginTop: 20,
+  subtitle: {
     fontSize: 14,
-    color: "#AAAAAA",
+    color: "#ffffff",
+    textAlign: "center",
+    marginBottom: 40,
+    paddingHorizontal: 20,
+  },
+  exploreBtn: {
+    backgroundColor: "#007bff",
+    paddingVertical: 14,
+    paddingHorizontal: 36,
+    borderRadius: 25,
+  },
+  btnText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });

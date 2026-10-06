@@ -47,7 +47,7 @@ export default function Header({ activeTab, setActiveTab, watchlistCount }) {
 const styles = StyleSheet.create({
   headerContainer: {
     marginBottom: 18,
-    marginTop: 20,
+    marginTop: 5,
   },
   headerTitle: {
     paddingVertical: 10,
