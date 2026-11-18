@@ -1,179 +1,202 @@
 import React, { useState, useEffect } from "react";
 import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  Text,
-  FlatList,
-  ActivityIndicator,
   StyleSheet,
-  SafeAreaView,
+  Text,
+  View,
+  FlatList,
+  Pressable,
+  ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
-import Header from "../src/components/header.jsx";
-import MovieCard from "../src/components/movieCard.jsx";
-import { fetchMoviesFromAPI } from "../src/api.jsx";
+import { ApiService } from "../services/apiservice";
+import MovieCard from "../components/moviecard";
 
-export default function Home() {
+export default function HomeScreen() {
   const router = useRouter();
-
+  const [activeCategory, setActiveCategory] = useState("trending");
   const [movies, setMovies] = useState([]);
-  const [watchlist, setWatchlist] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("search");
 
-  const handleBack = () => {
-  if (router.canGoBack()) {
-    router.back();
-  } else {
-    router.replace("/"); 
-  }
-  };
+  useEffect(() => {
+    loadCategoryData(activeCategory);
+  }, [activeCategory]);
 
-  const loadMovies = async (query = "") => {
+  const loadCategoryData = async (category) => {
     setLoading(true);
-    const data = await fetchMoviesFromAPI(query);
-    setMovies(data);
+    let result = [];
+    if (category === "trending") result = await ApiService.fetchTrending();
+    else if (category === "top_rated")
+      result = await ApiService.fetchTopRated();
+    else if (category === "new_releases")
+      result = await ApiService.fetchNewReleases();
+    setMovies(result);
     setLoading(false);
   };
 
-  useEffect(() => {
-    loadMovies();
-  }, []);
-
-  const handleSearchSubmit = () => {
-    loadMovies(searchQuery);
-  };
-
-  const toggleWatchlist = (movie) => {
-    if (watchlist.some((item) => item.id === movie.id)) {
-      setWatchlist(watchlist.filter((item) => item.id !== movie.id));
-    } else {
-      setWatchlist([...watchlist, movie]);
-    }
-  };
-
-  const displayedList = activeTab === "watchlist" ? watchlist : movies;
-
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <View style={styles.container}>
-        <View style={styles.topNavigation}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={handleBack}
-        >
-          <Text style={styles.backButtonText}>Back</Text>
-          </TouchableOpacity>
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>DobDob TV</Text>
+        <View style={styles.navButtons}>
+          <Pressable
+            onPress={() => router.push("/search")}
+            style={styles.navBtn}
+          >
+            <Text style={styles.navText}>Search</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/watchlist")}
+            style={styles.navBtn}
+          >
+            <Text style={styles.navText}>Watchlist</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => router.push("/profile")}
+            style={styles.navBtn}
+          >
+            <Text style={styles.navText}>Profile</Text>
+          </Pressable>
         </View>
-
-        <Header
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          watchlistCount={watchlist.length}
-        />
-
-        {activeTab === "search" && (
-          <View style={styles.searchForm}>
-            <TextInput
-              placeholder="Search movies..."
-              placeholderTextColor="#d6d5d5"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              onSubmitEditing={handleSearchSubmit}
-              style={styles.searchInput}
-            />
-            <TouchableOpacity onPress={handleSearchSubmit} style={styles.searchBtn}>
-              <Text style={styles.searchBtnText}>Search</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-
-        {loading ? (
-          <ActivityIndicator size="large" color="#fff" style={{ marginTop: 20 }} />
-        ) : (
-          <FlatList
-            data={displayedList}
-            keyExtractor={(item) => item.id.toString()}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <MovieCard
-                movie={item}
-                isSaved={watchlist.some((savedItem) => savedItem.id === item.id)}
-                toggleWatchlist={toggleWatchlist}
-              />
-            )}
-            ListEmptyComponent={
-              <Text style={styles.emptyText}>No movies found.</Text>
-            }
-          />
-        )}
       </View>
-    </SafeAreaView>
+
+      {/* Category Tabs */}
+      <View style={styles.categoryContainer}>
+        <Pressable
+          style={[
+            styles.categoryBtn,
+            activeCategory === "trending" && styles.categoryBtnActive,
+          ]}
+          onPress={() => setActiveCategory("trending")}
+        >
+          <Text
+            style={[
+              styles.categoryText,
+              activeCategory === "trending" && styles.categoryTextActive,
+            ]}
+          >
+            Trending
+          </Text>
+        </Pressable>
+
+        <Pressable
+          style={[
+            styles.categoryBtn,
+            activeCategory === "top_rated" && styles.categoryBtnActive,
+          ]}
+          onPress={() => setActiveCategory("top_rated")}
+        >
+          <Text
+            style={[
+              styles.categoryText,
+              activeCategory === "top_rated" && styles.categoryTextActive,
+            ]}
+          >
+            Top Rated
+          </Text>
+        </Pressable>
+
+        <Pressable
+          style={[
+            styles.categoryBtn,
+            activeCategory === "new_releases" && styles.categoryBtnActive,
+          ]}
+          onPress={() => setActiveCategory("new_releases")}
+        >
+          <Text
+            style={[
+              styles.categoryText,
+              activeCategory === "new_releases" && styles.categoryTextActive,
+            ]}
+          >
+            New Releases
+          </Text>
+        </Pressable>
+      </View>
+
+      {/* Movie List Rendering using MovieCard Blueprint */}
+      {loading ? (
+        <ActivityIndicator
+          size="large"
+          color="#E50914"
+          style={{ marginTop: 50 }}
+        />
+      ) : (
+        <FlatList
+          data={movies}
+          keyExtractor={(item) => item.id.toString()}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <MovieCard
+              item={item}
+              onPress={() =>
+                router.push({
+                  pathname: "/details",
+                  params: { movie: JSON.stringify(item) },
+                })
+              }
+            />
+          )}
+        />
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeContainer: {
-    flex: 1,
-    backgroundColor: "#121212",
-  },
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: "#121212",
+    paddingHorizontal: 16,
+    paddingTop: 50,
   },
-  topNavigation: {
+  header: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 15,
-  },
-  backButton: {
-    backgroundColor: "#252021",
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#333333",
-  },
-  backButtonText: {
-    color: "#FFFFFF",
-    fontSize: 13,
-    fontWeight: "bold",
-  },
-  searchForm: {
-    flexDirection: "row",
     marginBottom: 16,
-    gap: 8,
   },
-  searchInput: {
+  headerTitle: { 
+    fontSize: 24, 
+    fontWeight: "bold", 
+    color: "#E50914" 
+  },
+  navButtons: { 
+    flexDirection: "row", 
+    gap: 6 
+  },
+  navBtn: {
+    backgroundColor: "#1e1e1e",
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    borderColor: "#E50914",
+    borderWidth: 2,
+  },
+  navText: { 
+    color: "#ffffff", 
+    fontSize: 12, 
+    fontWeight: "bold" },
+  categoryContainer: { 
+    flexDirection: "row", 
+    gap: 8, 
+    marginBottom: 16 },
+  categoryBtn: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "#ffffff",
-    backgroundColor: "#1E1E1E",
-    borderRadius: 8,
-    paddingHorizontal: 12,
     paddingVertical: 10,
-    fontSize: 14,
-    color: "#FFFFFF",
-  },
-  searchBtn: {
-    backgroundColor: "#FFFFFF",
-    justifyContent: "center",
+    backgroundColor: "#1e1e1e",
+    borderRadius: 8,
     alignItems: "center",
-    paddingHorizontal: 18,
-    borderRadius: 10,
   },
-  searchBtnText: {
-    color: "#121212",
-    fontWeight: "bold",
-    fontSize: 14,
+  categoryBtnActive: { 
+    backgroundColor: "#E50914" 
   },
-  emptyText: {
-    textAlign: "center",
-    marginTop: 20,
-    fontSize: 14,
-    color: "#AAAAAA",
+  categoryText: { 
+    color: "#aaaaaa", 
+    fontSize: 12, 
+    fontWeight: "bold" 
+  },
+  categoryTextActive: { 
+    color: "#ffffff" 
   },
 });
