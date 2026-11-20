@@ -55,6 +55,7 @@ export default function DetailsScreen() {
 
       <Text style={styles.title}>{movieData.title}</Text>
       <Text style={styles.rating}>Rating: {movieData.vote_average} / 10</Text>
+      <Text style={styles.releaseDate}>Release Date: {movieData.release_date}</Text>
       <Text style={styles.overview}>
         {movieData.overview || "No overview available."}
       </Text>
@@ -111,6 +112,11 @@ const styles = StyleSheet.create({
     color: "#ffcc00",
     fontWeight: "bold",
     marginBottom: 16,
+  },
+  releaseDate: { 
+    fontSize: 14, 
+    color: "#ffffff", 
+    marginBottom: 16 
   },
   overview: { 
     fontSize: 14, 

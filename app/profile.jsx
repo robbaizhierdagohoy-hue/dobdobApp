@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, Text, View, Pressable, Image } from "react-native";
 import { useRouter } from "expo-router";
-import Logo from "../assets/LOGO.jpg";
+import Logo from "../assets/Profile.jpg";
 
 export default function ProfileScreen() {
   const router = useRouter();
