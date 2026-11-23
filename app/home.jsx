@@ -114,7 +114,7 @@ export default function HomeScreen() {
         </Pressable>
       </View>
 
-      {/* Movie List Rendering using MovieCard Blueprint */}
+      {/* Movie List Rendering */}
       {loading ? (
         <ActivityIndicator
           size="large"

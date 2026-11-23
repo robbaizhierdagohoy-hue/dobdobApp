@@ -16,6 +16,14 @@ export default function DetailsScreen() {
   const movieData = movie ? JSON.parse(movie) : {};
   const [inWatchlist, setInWatchlist] = useState(false);
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/home');
+    }
+  };
+
   useEffect(() => {
     checkWatchlistStatus();
   }, []);
@@ -39,8 +47,8 @@ export default function DetailsScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Pressable onPress={() => router.back()} style={styles.backBtn}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <Pressable onPress={handleBack} style={styles.backBtn}>
         <Text style={styles.backTxt}>Back</Text>
       </Pressable>
 
@@ -52,7 +60,6 @@ export default function DetailsScreen() {
         }}
         style={styles.backdrop}
       />
-
       <Text style={styles.title}>{movieData.title}</Text>
       <Text style={styles.rating}>Rating: {movieData.vote_average} / 10</Text>
       <Text style={styles.releaseDate}>Release Date: {movieData.release_date}</Text>

@@ -16,6 +16,14 @@ export default function SearchScreen() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/home');
+    }
+  };
+
   const handleSearch = async (text) => {
     setQuery(text);
     if (text.trim().length > 2) {
@@ -28,7 +36,7 @@ export default function SearchScreen() {
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => router.back()} style={styles.backBtn}>
+      <Pressable onPress={handleBack} style={styles.backBtn}>
         <Text style={styles.backTxt}>Back</Text>
       </Pressable>
 

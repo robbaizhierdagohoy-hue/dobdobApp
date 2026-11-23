@@ -5,10 +5,18 @@ import Logo from "../assets/Profile.jpg";
 
 export default function ProfileScreen() {
   const router = useRouter();
+  
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/home');
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Pressable onPress={() => router.back()} style={styles.backBtn}>
+      <Pressable onPress={handleBack} style={styles.backBtn}>
         <Text style={styles.backTxt}>Back</Text>
       </Pressable>
 
