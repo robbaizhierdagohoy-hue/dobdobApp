@@ -16,6 +16,7 @@ export default function HomeScreen() {
   const [activeCategory, setActiveCategory] = useState("trending");
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     loadCategoryData(activeCategory);
@@ -33,31 +34,54 @@ export default function HomeScreen() {
     setLoading(false);
   };
 
+  const handleNavigate = (path) => {
+    setMenuOpen(false);
+    router.push(path);
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>DobDob TV</Text>
-        <View style={styles.navButtons}>
-          <Pressable
-            onPress={() => router.push("/search")}
-            style={styles.navBtn}
-          >
-            <Text style={styles.navText}>Search</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => router.push("/watchlist")}
-            style={styles.navBtn}
-          >
-            <Text style={styles.navText}>Watchlist</Text>
-          </Pressable>
-          <Pressable
-            onPress={() => router.push("/profile")}
-            style={styles.navBtn}
-          >
-            <Text style={styles.navText}>Profile</Text>
-          </Pressable>
-        </View>
+
+        {/* Menu Button */}
+        <Pressable
+          onPress={() => setMenuOpen((prev) => !prev)}
+          style={styles.menuBtn}
+        >
+          <Text style={styles.menuBtnText}>Menu</Text>
+        </Pressable>
+
+        {/* Dropdown Menu */}
+        {menuOpen && (
+          <View style={styles.dropdownMenu}>
+            <Pressable
+              onPress={() => handleNavigate("/search")}
+              style={styles.menuItem}
+            >
+              <Text style={styles.menuItemText}>Search</Text>
+            </Pressable>
+
+            <View style={styles.menuDivider} />
+
+            <Pressable
+              onPress={() => handleNavigate("/watchlist")}
+              style={styles.menuItem}
+            >
+              <Text style={styles.menuItemText}>Watchlist</Text>
+            </Pressable>
+
+            <View style={styles.menuDivider} />
+
+            <Pressable
+              onPress={() => handleNavigate("/profile")}
+              style={styles.menuItem}
+            >
+              <Text style={styles.menuItemText}>Profile</Text>
+            </Pressable>
+          </View>
+        )}
       </View>
 
       {/* Category Tabs */}
@@ -129,12 +153,13 @@ export default function HomeScreen() {
           renderItem={({ item }) => (
             <MovieCard
               item={item}
-              onPress={() =>
+              onPress={() => {
+                setMenuOpen(false);
                 router.push({
                   pathname: "/details",
                   params: { movie: JSON.stringify(item) },
-                })
-              }
+                });
+              }}
             />
           )}
         />
@@ -155,32 +180,62 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 16,
+    position: "relative",
+    zIndex: 20,
   },
-  headerTitle: { 
-    fontSize: 24, 
-    fontWeight: "bold", 
-    color: "#E50914" 
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#E50914",
   },
-  navButtons: { 
-    flexDirection: "row", 
-    gap: 6 
-  },
-  navBtn: {
+  menuBtn: {
     backgroundColor: "#1e1e1e",
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 10,
     borderColor: "#E50914",
     borderWidth: 2,
   },
-  navText: { 
-    color: "#ffffff", 
-    fontSize: 12, 
-    fontWeight: "bold" },
-  categoryContainer: { 
-    flexDirection: "row", 
-    gap: 8, 
-    marginBottom: 16 },
+  menuBtnText: {
+    color: "#ffffff",
+    fontSize: 13,
+    fontWeight: "bold",
+  },
+  dropdownMenu: {
+    position: "absolute",
+    top: 46,
+    right: 0,
+    width: 150,
+    backgroundColor: "#1e1e1e",
+    borderRadius: 12,
+    borderColor: "#E50914",
+    borderWidth: 1.5,
+    paddingVertical: 4,
+    zIndex: 30,
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+  },
+  menuItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  menuItemText: {
+    color: "#ffffff",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  menuDivider: {
+    height: 1,
+    backgroundColor: "#2c2c2c",
+  },
+  categoryContainer: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 16,
+  },
   categoryBtn: {
     flex: 1,
     paddingVertical: 10,
@@ -188,15 +243,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
   },
-  categoryBtnActive: { 
-    backgroundColor: "#E50914" 
+  categoryBtnActive: {
+    backgroundColor: "#E50914",
   },
-  categoryText: { 
-    color: "#aaaaaa", 
-    fontSize: 12, 
-    fontWeight: "bold" 
+  categoryText: {
+    color: "#aaaaaa",
+    fontSize: 12,
+    fontWeight: "bold",
   },
-  categoryTextActive: { 
-    color: "#ffffff" 
+  categoryTextActive: {
+    color: "#ffffff",
   },
 });
