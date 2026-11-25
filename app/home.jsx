@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 10,
     borderColor: "#E50914",
-    borderWidth: 2,
+    borderWidth: 1,
   },
   menuBtnText: {
     color: "#ffffff",
@@ -212,11 +212,6 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     paddingVertical: 4,
     zIndex: 30,
-    elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
   },
   menuItem: {
     paddingVertical: 12,
@@ -229,7 +224,7 @@ const styles = StyleSheet.create({
   },
   menuDivider: {
     height: 1,
-    backgroundColor: "#2c2c2c",
+    backgroundColor: "#5a3131",
   },
   categoryContainer: {
     flexDirection: "row",
